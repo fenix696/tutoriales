@@ -52,6 +52,6 @@ app.post('/videos', (req, res) => {
 });
 
 // Iniciar el servidor
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+app.listen(PORT, '192.168.14.250', () => {
+  console.log(`Servidor corriendo en http://192.168.14.250:${PORT}`);
 });

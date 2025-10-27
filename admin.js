@@ -26,7 +26,7 @@ function extractVideoId(url) {
 }
 
 function saveVideoToFile(videoId, title) {
-    fetch('videos.json', {
+    fetch('/videos', { // Use the correct API endpoint
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -36,8 +36,13 @@ function saveVideoToFile(videoId, title) {
 }
 
 function loadVideosFromFile() {
-    fetch('videos.json')
-        .then(response => response.json())
+    fetch('/videos') // Use the correct API endpoint
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al cargar los videos');
+            }
+            return response.json();
+        })
         .then(videos => {
             videos.forEach(video => addVideoToList(video.videoId, video.title));
         })
