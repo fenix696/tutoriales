@@ -6,14 +6,9 @@ services:
     container_name: video_app
     working_dir: /usr/src/app
     volumes:
-      - .:/usr/src/app
-      - videos_data:/usr/src/app/videos.json
+      - .:/usr/src/app # Mount the entire project directory
     ports:
       - "3000:3000"
-    command: ["sh", "-c", "npm install && node server.js"]
+    command: ["sh", "-c", "npm install && npm start"] # Ensure npm start runs server.js
     stdin_open: true
     tty: true
-
-volumes:
-  videos_data:
-    driver: local
