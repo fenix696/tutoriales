@@ -52,9 +52,9 @@ function loadVideosFromFile() {
 
 function deleteVideo(videoId) {
     const adminPassword = prompt('Por favor, ingresa la contraseña de administrador:');
-    if (adminPassword !== 'admin123') { // Replace 'admin123' with your actual admin password
+    if (adminPassword !== '156354') { // Replace 'admin123' with your actual admin password
         alert('Contraseña incorrecta. No tienes permiso para borrar este video.');
-        return;
+        return; // Exit the function without making a DELETE request
     }
 
     fetch(`/videos/${videoId}`, {
@@ -69,8 +69,12 @@ function deleteVideo(videoId) {
         if (videoElement) {
             videoElement.remove();
         }
+        alert('Video borrado correctamente.');
     })
-    .catch(error => console.error('Error al borrar el video:', error));
+    .catch(error => {
+        console.error('Error al borrar el video:', error);
+        alert('Hubo un error al intentar borrar el video.');
+    });
 }
 
 function addVideoToList(videoId, title) {
