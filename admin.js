@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     loadVideosFromFile();
+    setupSearchFunctionality(); // Initialize search functionality
 });
 
 document.getElementById('video-form').addEventListener('submit', function(event) {
@@ -26,7 +27,7 @@ function extractVideoId(url) {
 }
 
 function saveVideoToFile(videoId, title) {
-    fetch('/videos', { // Use the correct API endpoint
+    fetch('/videos', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -36,7 +37,7 @@ function saveVideoToFile(videoId, title) {
 }
 
 function loadVideosFromFile() {
-    fetch('/videos') // Use the correct API endpoint
+    fetch('/videos')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Error al cargar los videos');
@@ -49,11 +50,36 @@ function loadVideosFromFile() {
         .catch(error => console.error('Error al cargar los videos:', error));
 }
 
+function deleteVideo(videoId) {
+    const adminPassword = prompt('Por favor, ingresa la contraseña de administrador:');
+    if (adminPassword !== 'admin123') { // Replace 'admin123' with your actual admin password
+        alert('Contraseña incorrecta. No tienes permiso para borrar este video.');
+        return;
+    }
+
+    fetch(`/videos/${videoId}`, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al borrar el video');
+        }
+        // Eliminar el video de la lista en la interfaz
+        const videoElement = document.getElementById(videoId);
+        if (videoElement) {
+            videoElement.remove();
+        }
+    })
+    .catch(error => console.error('Error al borrar el video:', error));
+}
+
 function addVideoToList(videoId, title) {
     const videoList = document.getElementById('video-list');
     videoList.classList.add('video-grid'); // Ensure the grid layout is applied
 
     const container = document.createElement('div');
+    container.id = videoId; // Set the ID for easy removal
+
     const iframe = document.createElement('iframe');
     iframe.src = `https://www.youtube.com/embed/${videoId}`;
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
@@ -62,7 +88,29 @@ function addVideoToList(videoId, title) {
     const videoTitle = document.createElement('h3');
     videoTitle.textContent = title;
 
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Borrar';
+    deleteButton.onclick = () => deleteVideo(videoId);
+
     container.appendChild(videoTitle);
     container.appendChild(iframe);
+    container.appendChild(deleteButton);
     videoList.appendChild(container);
+}
+
+function setupSearchFunctionality() {
+    const searchInput = document.getElementById('video-search');
+    searchInput.addEventListener('input', function(event) {
+        const query = event.target.value.toLowerCase();
+        const videos = document.querySelectorAll('#video-list > div');
+
+        videos.forEach(video => {
+            const title = video.querySelector('h3').textContent.toLowerCase();
+            if (title.includes(query)) {
+                video.style.display = '';
+            } else {
+                video.style.display = 'none';
+            }
+        });
+    });
 }
